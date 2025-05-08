@@ -1,0 +1,48 @@
+cargo-features = ["per-package-target"]
+
+[package]
+name = "harmoneyes-controller"
+version = "0.1.0"
+edition = "2024"
+forced-target = "thumbv7em-none-eabihf" # Target for the Cortex M4F
+
+[dependencies]
+cortex-m = "0.7.7"
+cortex-m-rt = "0.7.5"
+critical-section = "1.2.0"
+defmt = "1.0.1"
+defmt-rtt = "1.0.0"
+embassy-embedded-hal = { version = "0.3.0", features = ["defmt"] }
+embassy-executor = { version = "0.7.0", features = ["arch-cortex-m", "executor-thread", "defmt"] }
+embassy-futures = "0.1.1"
+embassy-nrf = { version = "0.3.1", features = ["nrf52840", "defmt", "time", "time-driver-rtc1", "gpiote"] }
+embassy-sync = "0.6.2"
+embassy-time = { version = "0.4.0", features = ["defmt", "defmt-timestamp-uptime"] }
+embassy-usb = "0.4.0"
+embedded-hal = "1.0.0"
+embedded-hal-async = "1.0.0"
+futures = { version = "0.3.31", default-features = false }
+harmoneyes-core = { path = "../harmoneyes-core" }
+nrf-pac = { version = "0.1.0", features = ["nrf52840", "cortex-m-rt", "defmt"] }
+once_cell = { version = "1.21.3", default-features = false }
+panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+smart-leds = "0.4.0"
+
+# Development profile
+[profile.dev]
+codegen-units = 1
+debug = 2
+debug-assertions = true
+incremental = false
+opt-level = 3
+overflow-checks = true
+
+# Release profile
+[profile.release]
+codegen-units = 1
+debug = 2
+debug-assertions = false
+incremental = false
+lto = "fat"
+opt-level = 'z'
+overflow-checks = false

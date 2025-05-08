@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.check.allTargets": false,
+    "rust-analyzer.linkedProjects": [
+        "harmoneyes-controller/Cargo.toml",
+        "harmoneyes-core/Cargo.toml",
+        "harmoneyes-cuff/Cargo.toml"
+    ]
+}
