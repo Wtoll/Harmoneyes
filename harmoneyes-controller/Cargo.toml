@@ -12,6 +12,7 @@ cortex-m-rt = "0.7.5"
 critical-section = "1.2.0"
 defmt = "1.0.1"
 defmt-rtt = "1.0.0"
+dw3000-ng = { version = "1.0.2", features = ["defmt"] }
 embassy-embedded-hal = { version = "0.3.0", features = ["defmt"] }
 embassy-executor = { version = "0.7.0", features = ["arch-cortex-m", "executor-thread", "defmt"] }
 embassy-futures = "0.1.1"
@@ -20,10 +21,13 @@ embassy-sync = "0.6.2"
 embassy-time = { version = "0.4.0", features = ["defmt", "defmt-timestamp-uptime"] }
 embassy-usb = "0.4.0"
 embedded-hal = "1.0.0"
-embedded-hal-async = "1.0.0"
+embedded-hal-async = { version = "1.0.0", features = ["defmt-03"] }
 futures = { version = "0.3.31", default-features = false }
 harmoneyes-core = { path = "../harmoneyes-core" }
+heapless = "0.8.0"
+nb = "1.1.0"
 nrf-pac = { version = "0.1.0", features = ["nrf52840", "cortex-m-rt", "defmt"] }
+nrf-softdevice = { version = "0.1", features = ["s140", "nrf52840", "critical-section-impl", "ble-central", "ble-peripheral", "ble-gatt-server"] }
 once_cell = { version = "1.21.3", default-features = false }
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 smart-leds = "0.4.0"
@@ -46,3 +50,6 @@ incremental = false
 lto = "fat"
 opt-level = 'z'
 overflow-checks = false
+
+[patch.crates-io]
+nrf-softdevice = { git = "https://github.com/embassy-rs/nrf-softdevice.git", rev = "a9206dd36f713c7b3a10468245fe1927b653ccc6" }

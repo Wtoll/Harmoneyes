@@ -19,13 +19,17 @@ embassy-rp = { version = "0.4.0", features = ["rp2040", "defmt", "time-driver", 
 embassy-sync = "0.6.2"
 embassy-time = { version = "0.4.0", features = ["defmt"] }
 embassy-usb = "0.4.0"
+embassy-usb-logger = "0.4.0"
 embedded-hal = "1.0.0"
 embedded-hal-async = "1.0.0"
 futures = { version = "0.3.31", default-features = false }
 harmoneyes-core = { path = "../harmoneyes-core" }
+log = "0.4.27"
 once_cell = { version = "1.21.3", default-features = false }
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
+portable-atomic = { version = "1.11", features = ["critical-section"] }
 smart-leds = "0.4.0"
+static_cell = "2.1.0"
 
 # Development profile
 [profile.dev]
