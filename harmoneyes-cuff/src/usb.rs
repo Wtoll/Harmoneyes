@@ -5,12 +5,6 @@ use futures::future::join;
 use log::info;
 use static_cell::StaticCell;
 
-const VID: u16 = 0xc0de;              // Vendor ID
-const PID: u16 = 0xcafe;              // Product ID
-const MAN: &str = "Harmoneyes Team";  // Manufacturer Name
-const PROD: &str = "Harmoneyes Cuff"; // Product Name
-const SID: &str = "HAU1";             // Serial Number
-
 static CONFIG_DESCRIPTOR: StaticCell<[u8; 256]> = StaticCell::new();
 static BOS_DESCRIPTOR: StaticCell<[u8; 256]> = StaticCell::new();
 static CONTROL_BUF: StaticCell<[u8; 64]> = StaticCell::new();
@@ -44,7 +38,7 @@ pub async fn task(
 
     let mut usb = builder.build();
 
-    // Run the low-level USB interface and the ACM handler concurrently
+    // Run the low-level USB interface, the ACM handler, and the logger concurrently
     join(usb.run(), join(handle_acm(acm), logger_fut)).await;
 }
 
@@ -82,11 +76,14 @@ async fn host_connection(acm: &mut CdcAcmClass<'static, Driver<'static, USB>>) -
 }
 
 fn usb_config() -> embassy_usb::Config<'static> {
-    let mut config = embassy_usb::Config::new(VID, PID);
+    let mut config = embassy_usb::Config::new(
+        harmoneyes_core::constants::USB_VENDOR_ID, 
+        harmoneyes_core::constants::cuff::USB_PRODUCT_ID
+    );
 
-    config.manufacturer = Some(MAN);
-    config.product = Some(PROD);
-    config.serial_number = Some(SID);
+    config.manufacturer = Some(harmoneyes_core::constants::MANUFACTURER);
+    config.product = Some(harmoneyes_core::constants::cuff::NAME);
+    config.serial_number = Some(harmoneyes_core::constants::cuff::SERIAL_ONE);
 
     config
 }

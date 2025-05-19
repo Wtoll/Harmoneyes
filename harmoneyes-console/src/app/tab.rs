@@ -20,10 +20,10 @@ impl Tab for OverviewTab {
     }
 
     fn render(&self, area: Rect, buf: &mut Buffer) {
-        use ratatui::layout::Constraint::{Length, Min, Fill};
+        use ratatui::layout::Constraint::{Length, Fill};
 
         let layout = Layout::horizontal([Length(32), Fill(1)]);
-        let [battery_area, other_area] = layout.areas(area);
+        let [battery_area, _other_area] = layout.areas(area);
 
         let block = Block::bordered()
             .title("Batteries");

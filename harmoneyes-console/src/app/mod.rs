@@ -1,7 +1,7 @@
-use std::{cmp::{max, min}, io, ops::Index};
+use std::{io, ops::Index};
 
 use crossterm::event::{self, Event, KeyCode, KeyEventKind, KeyModifiers};
-use ratatui::{buffer::Buffer, layout::{Layout, Rect}, symbols, widgets::{Block, Padding, Tabs, Widget}, DefaultTerminal, Frame};
+use ratatui::{buffer::Buffer, layout::{Layout, Rect}, widgets::{Block, Tabs, Widget}, DefaultTerminal, Frame};
 use tab::{DeviceTab, OverviewTab, Tab};
 
 mod tab;

@@ -1,12 +1,11 @@
-use core::fmt::Debug;
 
-use defmt::{expect, info, Format};
-use dw3000_ng::{hl::{Receiving, RxQuality, SendTime}, time::Instant, Ready, SingleBufferReceiving, DW3000};
+use defmt::info;
+use dw3000_ng::{hl::RxQuality, time::Instant, SingleBufferReceiving, DW3000};
 use embassy_embedded_hal::shared_bus::asynch::spi::SpiDevice;
 use embassy_futures::select::{select, Either};
 use embassy_nrf::{bind_interrupts, gpio::{Input, Level, Output, OutputDrive, Pull}, interrupt::{self, InterruptExt, Priority}, peripherals::{P0_07, P0_13, P0_14, P0_15, P0_24, P0_25, P1_08, SPI3}, spim::{self, Spim}};
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, mutex::Mutex, signal::Signal};
-use embassy_time::{Duration, Ticker, Timer};
+use embassy_time::Timer;
 
 static POLL_SIGNAL: Signal<CriticalSectionRawMutex, ()> = Signal::new();
 
@@ -38,7 +37,7 @@ pub async fn task(
     let cs = Output::new(cs, Level::High, OutputDrive::Standard);
     let device = SpiDevice::new(&spi, cs);
 
-    let mut dwm = DW3000::new(device);
+    let dwm = DW3000::new(device);
 
     // Make sure we really are pulling the reset pin low
     reset.set_low();
@@ -75,7 +74,7 @@ pub async fn task(
 
         let mut rx = dwm.receive(dw_config()).await.expect("Failed to enter receiving mode");
 
-        let (buf, len, inst, qual) = loop {
+        let (buf, len, _inst, _qual) = loop {
             info!("trying to receive a packet");
 
             let mut buf = [0u8; 128];

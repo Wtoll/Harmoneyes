@@ -1,5 +1,10 @@
+use embassy_rp::{bind_interrupts, gpio::{Level, Output}, peripherals::{DMA_CH0, PIN_11, PIN_12, PIO0}, pio::{self, Pio}, pio_programs::ws2812::{PioWs2812, PioWs2812Program}};
+use embassy_time::{Duration, Ticker};
+use log::debug;
+use smart_leds::RGB8;
+
 bind_interrupts!(struct Irqs {
-    PIO0_IRQ_0 => InterruptHandler<PIO0>;
+    PIO0_IRQ_0 => pio::InterruptHandler<PIO0>;
 });
 
 fn wheel(mut wheel_pos: u8) -> RGB8 {
@@ -16,7 +21,7 @@ fn wheel(mut wheel_pos: u8) -> RGB8 {
 }
 
 #[embassy_executor::task]
-async fn task(pio: PIO0, dma: DMA_CH0, data_pin: PIN_12, power_pin: PIN_11) {
+pub async fn task(pio: PIO0, dma: DMA_CH0, data_pin: PIN_12, power_pin: PIN_11) {
     let Pio { mut common, sm0, .. } = Pio::new(pio, Irqs);
 
     const NUM_LEDS: usize = 1;

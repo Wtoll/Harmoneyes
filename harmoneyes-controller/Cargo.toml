@@ -20,17 +20,20 @@ embassy-nrf = { version = "0.3.1", features = ["nrf52840", "defmt", "time", "tim
 embassy-sync = "0.6.2"
 embassy-time = { version = "0.4.0", features = ["defmt", "defmt-timestamp-uptime"] }
 embassy-usb = "0.4.0"
+embassy-usb-logger = "0.4.0"
 embedded-hal = "1.0.0"
 embedded-hal-async = { version = "1.0.0", features = ["defmt-03"] }
 futures = { version = "0.3.31", default-features = false }
 harmoneyes-core = { path = "../harmoneyes-core" }
 heapless = "0.8.0"
+log = "0.4.27"
 nb = "1.1.0"
 nrf-pac = { version = "0.1.0", features = ["nrf52840", "cortex-m-rt", "defmt"] }
 nrf-softdevice = { version = "0.1", features = ["s140", "nrf52840", "critical-section-impl", "ble-central", "ble-peripheral", "ble-gatt-server"] }
 once_cell = { version = "1.21.3", default-features = false }
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 smart-leds = "0.4.0"
+static_cell = "2.1.0"
 
 # Development profile
 [profile.dev]

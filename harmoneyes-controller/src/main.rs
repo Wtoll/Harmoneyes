@@ -7,6 +7,9 @@ mod usb;
 mod uwb;
 mod softdevice;
 mod coord;
+mod ws;
+mod ble;
+mod rng;
 
 use defmt_rtt as _;
 use panic_probe as _;
@@ -25,7 +28,7 @@ async fn main(spawner: Spawner) -> ! {
 
     // Initialize the softdevice
     info!("Initializing softdevice");
-    softdevice::initialize(&spawner);
+    softdevice::initialize(&spawner).await;
 
     // Spawn the ultra-wide band task
     info!("Spawning ultra-wide band task");
@@ -64,9 +67,11 @@ async fn main(spawner: Spawner) -> ! {
         p.USBD
     ));
 
-
-
-
+    info!("Spawning Neopixel task");
+    spawner.must_spawn(ws::task(
+        p.PWM0,
+        p.P0_16
+    ));
 
     // A ticker that every 5 seconds will trigger the front motor for 50 miliseconds
 
@@ -82,7 +87,7 @@ async fn main(spawner: Spawner) -> ! {
 
         match twi::DRIVER.lock().await
             .get_mut().expect("Two-wire interface driver is not initialized") // SAFETY: We called twi::initialize above
-            .write(harmoneyes_core::constants::CUFF_I2C_ADDRESS as u8, &command).await {
+            .write(harmoneyes_core::constants::cuff::I2C_ADDRESS as u8, &command).await {
                 Err(Error::TxBufferTooLong) => { info!("Transmit buffer was too long") },
                 Err(Error::RxBufferTooLong) => { info!("Receive buffer was too long") },
                 Err(Error::Transmit) => { info!("Data transmission failed") },

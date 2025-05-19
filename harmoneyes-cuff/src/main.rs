@@ -4,6 +4,7 @@
 mod haptics;
 mod twi;
 mod usb;
+mod ws;
 
 use panic_probe as _;
 use defmt_rtt as _;
@@ -37,6 +38,14 @@ async fn main(spawner: Spawner) {
     // Spawn the USB task
     info!("Spawning USB task");
     spawner.must_spawn(usb::task(p.USB));
+
+    info!("Spawning Neopixel task");
+    spawner.must_spawn(ws::task(
+        p.PIO0,
+        p.DMA_CH0,
+        p.PIN_12,
+        p.PIN_11
+    ));
 }
 
 fn embassy_config() -> embassy_rp::config::Config {

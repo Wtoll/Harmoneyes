@@ -33,24 +33,24 @@ pub async fn task(
             Ok(Command::GeneralCall(len)) => { info!("General Call: {:?}", &buf[..len]); },
             Ok(Command::WriteRead(len)) => {
                 info!("WriteRead: {:?}", &buf[..len]);
-                driver.respond_to_read(&[0xBC]).await;
+                let _ = driver.respond_to_read(&[0xBC]).await;
             },
             Ok(Command::Read) => {
                 info!("Read");
-                driver.respond_to_read(&[0xAB]).await;
+                let _ = driver.respond_to_read(&[0xAB]).await;
             },
             Err(Error::PartialGeneralCall(len)) => { info!("Partial General: {:?}", &buf[..len]); },
             Err(Error::PartialWrite(len)) => { info!("Partial Write: {:?}", &buf[..len]); },
             Err(Error::Abort(reason)) => { info!("Abort: {:?}", reason); },
             Err(Error::InvalidResponseBufferLength) => { info!("Invalid Response Length"); },
-            Err(e) => {}
+            Err(_e) => {}
         }
     }
 }
 
 fn peripheral_config() -> i2c_slave::Config {
     let mut config = i2c_slave::Config::default();
-    config.addr = harmoneyes_core::constants::CUFF_I2C_ADDRESS;
+    config.addr = harmoneyes_core::constants::cuff::I2C_ADDRESS;
 
     config
 }

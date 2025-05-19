@@ -8,9 +8,12 @@ async fn task(sd: &'static Softdevice) -> ! {
     sd.run().await
 }
 
-pub fn initialize(spawner: &Spawner) {
+pub async fn initialize(spawner: &Spawner) {
     let sd = Softdevice::enable(&config());
+    
     spawner.must_spawn(task(sd));
+    spawner.must_spawn(crate::ble::task(sd));
+    crate::rng::initialize(spawner, sd).await;
 }
 
 fn config() -> nrf_softdevice::Config {
