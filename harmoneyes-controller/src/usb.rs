@@ -1,7 +1,7 @@
 use embassy_futures::join::join;
 use embassy_nrf::{bind_interrupts, interrupt::{self, InterruptExt, Priority}, peripherals::USBD, usb::{self, vbus_detect::SoftwareVbusDetect, Driver}};
 use embassy_usb::{class::cdc_acm::{CdcAcmClass, State}, driver::EndpointError, Builder};
-use log::info;
+use defmt::info;
 use static_cell::StaticCell;
 
 static CONFIG_DESCRIPTOR: StaticCell<[u8; 256]> = StaticCell::new();
@@ -37,24 +37,29 @@ pub async fn task(
         CONTROL_BUF.init([0; 64])
     );
 
-    let logger = CdcAcmClass::new(&mut builder, LOGGER_STATE.init(State::new()), 64);
-    let logger_fut = embassy_usb_logger::with_class!(1024, log::LevelFilter::Trace, logger);
-
-    let acm = CdcAcmClass::new(&mut builder, ACM_STATE.init(State::new()), 64);
+    let logger_class = CdcAcmClass::new(&mut builder, LOGGER_STATE.init(State::new()), 64);
+    let serial_class = CdcAcmClass::new(&mut builder, ACM_STATE.init(State::new()), 64);
 
     let mut usb = builder.build();
 
     // Run the low-level USB interface, the ACM handler, and the logger concurrently
-    join(usb.run(), join(handle_acm(acm), logger_fut)).await;
+    join(usb.run(), join(handle_serial(serial_class), handle_logger(logger_class))).await;
 }
 
-async fn handle_acm<'a>(mut acm: CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> ! {
+async fn handle_logger<'a>(mut logger_class: CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> ! {
     loop {
-        acm.wait_connection().await;
+        logger_class.wait_connection().await;
         info!("Established USB connection");
 
-        let _ = host_connection(&mut acm).await;
+        let _ = host_logger_connection(&mut logger_class).await;
         info!("Disconnected from USB");
+    }
+}
+
+async fn handle_serial<'a>(mut serial_class: CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> ! {
+    loop {
+        serial_class.wait_connection().await;
+        let _ = host_serial_connection(&mut serial_class).await;
     }
 }
 
@@ -70,14 +75,25 @@ impl From<EndpointError> for Disconnected {
 }
 
 /// Handles serial data communication to another device connected over USB.
-async fn host_connection<'a>(acm: &mut CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> Result<(), Disconnected> {
+async fn host_serial_connection<'a>(serial_class: &mut CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> Result<(), Disconnected> {
     let mut buf = [0; 64];
 
     loop {
-        let n = acm.read_packet(&mut buf).await?;
+        let n = serial_class.read_packet(&mut buf).await?;
         let data = &buf[..n];
         info!("data: {:?}", data);
-        acm.write_packet(data).await?;
+        serial_class.write_packet(data).await?;
+    }
+}
+
+async fn host_logger_connection<'a>(logger_class: &mut CdcAcmClass<'a, Driver<'a, USBD, &'a SoftwareVbusDetect>>) -> Result<(), Disconnected> {
+    let mut buf = [0; 64];
+
+    loop {
+        let n = logger_class.read_packet(&mut buf).await?;
+        let data = &buf[..n];
+        info!("data: {:?}", data);
+        logger_class.write_packet(data).await?;
     }
 }
 

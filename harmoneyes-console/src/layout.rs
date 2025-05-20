@@ -1,4 +1,50 @@
-use ratatui::{buffer::Buffer, layout::{Layout, Rect}, text::Line, widgets::{Bar, BarChart, BarGroup, Block, Widget}};
+use std::ops::Index;
+
+use ratatui::{buffer::Buffer, layout::{Layout, Rect}, text::Line, widgets::{Bar, BarChart, BarGroup, Block, Tabs, Widget}};
+
+#[derive(Default)]
+pub struct AppView {
+    tabs: Vec<Box<dyn Tab>>,
+    tab: usize
+}
+
+impl AppView {
+    pub fn new() -> Self {
+        AppView {
+            tabs: vec![Box::new(OverviewTab {}), Box::new(DeviceTab { name: "Device One".to_string() })],
+            ..Default::default()
+        }
+    }
+}
+
+impl Widget for &AppView {
+    fn render(self, area: ratatui::prelude::Rect, buf: &mut ratatui::prelude::Buffer) {
+        use ratatui::layout::Constraint::{Length, Min};
+
+        let layout = Layout::vertical([Min(0), Length(3)]);
+        let [tab_area, title_area] = layout.areas(area);
+
+        let titles = self.tabs.iter().map(Box::as_ref).map(Tab::title);
+
+        let block = Block::bordered();
+
+        Tabs::new(titles)
+            .block(block)
+            .select(self.tab)
+            .render(title_area, buf);
+
+        let content_block = Block::bordered();
+        
+        self.tabs.index(self.tab).render(content_block.inner(tab_area), buf);
+
+        content_block.render(tab_area, buf);
+    }
+}
+
+
+
+
+
 
 pub trait Tab {
     fn title(&self) -> String;

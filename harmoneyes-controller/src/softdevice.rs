@@ -40,9 +40,9 @@ fn config() -> nrf_softdevice::Config {
             _bitfield_1: raw::ble_gap_cfg_role_count_t::new_bitfield_1(0),
         }),
         gap_device_name: Some(raw::ble_gap_cfg_device_name_t {
-            p_value: b"Harmoneyes" as *const u8 as _,
-            current_len: 9,
-            max_len: 9,
+            p_value: b"Harmoneyes Controller" as *const u8 as _,
+            current_len: 21,
+            max_len: 21,
             write_perm: unsafe { mem::zeroed() },
             _bitfield_1: raw::ble_gap_cfg_device_name_t::new_bitfield_1(raw::BLE_GATTS_VLOC_STACK as u8),
         }),

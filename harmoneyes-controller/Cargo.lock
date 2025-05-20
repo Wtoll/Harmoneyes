@@ -796,6 +796,7 @@ source = "git+https://github.com/embassy-rs/nrf-softdevice.git?rev=a9206dd36f713
 dependencies = [
  "cortex-m",
  "critical-section",
+ "defmt 0.3.100",
  "embassy-futures",
  "embassy-sync",
  "embedded-storage",

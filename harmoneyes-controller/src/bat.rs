@@ -67,7 +67,7 @@ pub async fn task(
 
         let bat = BatteryCharge::new(buf[0]);
 
-        info!("New Battery Reading {{\n    Raw: {}\n    Parsed: {} mV\n    Parsed: {}%\n}}", bat.0, bat.as_millivolts(), bat.as_ratio() * 100.0);
+        // info!("New Battery Reading {{\n    Raw: {}\n    Parsed: {} mV\n    Parsed: {}%\n}}", bat.0, bat.as_millivolts(), bat.as_ratio() * 100.0);
 
         BATTERY.lock().await.replace(BatteryCharge::new(buf[0]));
 

@@ -22,6 +22,8 @@ pub mod controller {
     pub const NAME: &str = concatcp!(super::HARMONEYES, " Controller");
     pub const USB_PRODUCT_ID: u16 = 0x0002;
 
+    pub const SERIALS: [&str; 2] = [SERIAL_ONE, SERIAL_TWO];
+
     pub const SERIAL_ONE: &str = "HAO001";
     pub const SERIAL_TWO: &str = "HAO002";
 }

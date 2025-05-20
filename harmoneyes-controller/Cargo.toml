@@ -14,7 +14,7 @@ defmt = "1.0.1"
 defmt-rtt = "1.0.0"
 dw3000-ng = { version = "1.0.2", features = ["defmt"] }
 embassy-embedded-hal = { version = "0.3.0", features = ["defmt"] }
-embassy-executor = { version = "0.7.0", features = ["arch-cortex-m", "executor-thread", "defmt"] }
+embassy-executor = { version = "0.7.0", features = ["arch-cortex-m", "executor-thread", "defmt", "nightly"] }
 embassy-futures = "0.1.1"
 embassy-nrf = { version = "0.3.1", features = ["nrf52840", "defmt", "time", "time-driver-rtc1", "gpiote"] }
 embassy-sync = "0.6.2"
@@ -29,7 +29,7 @@ heapless = "0.8.0"
 log = "0.4.27"
 nb = "1.1.0"
 nrf-pac = { version = "0.1.0", features = ["nrf52840", "cortex-m-rt", "defmt"] }
-nrf-softdevice = { version = "0.1", features = ["s140", "nrf52840", "critical-section-impl", "ble-central", "ble-peripheral", "ble-gatt-server"] }
+nrf-softdevice = { version = "0.1", features = ["s140", "nrf52840", "critical-section-impl", "ble-central", "ble-peripheral", "ble-gatt-server", "defmt"] }
 once_cell = { version = "1.21.3", default-features = false }
 panic-probe = { version = "1.0.0", features = ["print-defmt"] }
 smart-leds = "0.4.0"
