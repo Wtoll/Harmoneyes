@@ -2,6 +2,19 @@
 #![no_main]
 #![feature(impl_trait_in_assoc_type)]
 
+use defmt_rtt as _;
+use embassy_nrf as _;
+
+#[cfg(debug_assertions)]
+use panic_probe as _;
+
+use defmt::info;
+use embassy_executor::Spawner;
+use embassy_nrf::twim::Error;
+use embassy_time::{Duration, Ticker};
+
+use bat::BATTERY;
+
 mod bat;
 mod twi;
 mod usb;
@@ -12,14 +25,25 @@ mod ws;
 mod ble;
 mod rng;
 
-use defmt_rtt as _;
-use panic_probe as _;
-use embassy_nrf as _;
+/// In the release environment, the end user is not going to be running the device with a debug probe,
+/// so this function serves as an alternate panic handler that will turn on the microcontroller's red led
+/// to indicate that something went wrong and the program is no longer running as normal.
+#[cfg(not(debug_assertions))]
+#[panic_handler]
+fn panic(info: &core::panic::PanicInfo) -> ! {
+    use nrf52840_hal as hal;
 
-use defmt::info;
-use embassy_executor::Spawner;
-use embassy_nrf::twim::Error;
-use embassy_time::{Duration, Ticker};
+    // SAFETY?: We've panicked already, what more can go wrong?
+    let p = unsafe { hal::pac::Peripherals::steal() };
+    
+    let p1 = hal::gpio::p1::Parts::new(p.P1);
+    // Turn the red LED on.
+    p1.p1_15.into_push_pull_output(hal::gpio::Level::High);
+
+    loop {
+        cortex_m::asm::bkpt();
+    }
+}
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) -> ! {
@@ -74,17 +98,19 @@ async fn main(spawner: Spawner) -> ! {
         p.P0_16
     ));
 
-    // A ticker that every 5 seconds will trigger the front motor for 50 miliseconds
+    // A ticker that every 5 seconds will update the color of the cuff according to the battery percentage
 
     let mut ticker = Ticker::every(Duration::from_secs(5));
 
-    let mut command: [u8; 9] = [0; 9];
-    command[1..9].copy_from_slice(&u64::to_le_bytes(50));
-
-    command[0] = 0x10; // Code for front
-
     loop {
         ticker.next().await;
+
+        let interp = (255.0 * BATTERY.lock().await.as_ref().map_or(0.0, |bat| { bat.as_ratio() })) as u64;
+
+        let mut command: [u8; 9] = [0; 9];
+        command[1..9].copy_from_slice(&u64::to_le_bytes(interp));
+
+        command[0] = 0x09; // Code for front
 
         match twi::DRIVER.lock().await
             .get_mut().expect("Two-wire interface driver is not initialized") // SAFETY: We called twi::initialize above

@@ -24,7 +24,7 @@ async fn listen(sd: &'static Softdevice) {
             // Every packet has a header that is the mesh AD type followed by the magic string "Harmoneyes"
             if data.len() > 12 && data[1..12] == [0x2A, 0x48, 0x61, 0x72, 0x6d, 0x6f, 0x6e, 0x65, 0x79, 0x65, 0x73] {
                 let data = &data[12..];
-                info!("Harmoneyes Data: {}", data);
+                // info!("Harmoneyes Data: {}", data);
             }
         }
         return None::<()>
@@ -37,7 +37,7 @@ async fn listen(sd: &'static Softdevice) {
 async fn advertise(sd: &'static Softdevice) {
     loop {
         let message = OUTBOX.receive().await;
-        info!("Sending a new message");
+        // info!("Sending a new message");
         
         let ad = peripheral::NonconnectableAdvertisement::ExtendedNonscannableUndirected {
             set_id: 0,

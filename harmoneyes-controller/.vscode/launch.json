@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "preLaunchTask": "${defaultBuildTask}",
+      "type": "probe-rs-debug",
+      "request": "launch",
+      "name": "probe_rs Executable Test",
+      "flashingConfig": {
+        "flashingEnabled": true,
+      },
+      "chip": "nRF52840_xxAA",
+      "coreConfigs": [
+        {
+          "programBinary": "${workspaceFolder}/target/thumbv7em-none-eabihf/debug/harmoneyes-controller"
+        }
+      ]
+    }
+  ]
+}

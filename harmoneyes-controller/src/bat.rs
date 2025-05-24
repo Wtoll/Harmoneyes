@@ -37,7 +37,7 @@ use embassy_nrf::{bind_interrupts, interrupt::{self, InterruptExt, Priority}, pe
 use embassy_sync::{blocking_mutex::raw::CriticalSectionRawMutex, mutex::Mutex};
 use embassy_time::{Duration, Ticker};
 
-static BATTERY: Mutex<CriticalSectionRawMutex, Option<BatteryCharge>> = Mutex::new(None);
+pub static BATTERY: Mutex<CriticalSectionRawMutex, Option<BatteryCharge>> = Mutex::new(None);
 
 bind_interrupts!(struct Irqs {
     SAADC => saadc::InterruptHandler;
